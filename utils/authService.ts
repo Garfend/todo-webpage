@@ -61,11 +61,13 @@ export function login(email, password) {
  */
 export function getUser() {
   const userId = localStorage.getItem(ACTIVE_USER_KEY);
-  const users = getFromStorage(USERS_KEY) || [];
+  const rawUsers = getFromStorage(USERS_KEY) || [];
+  const users = rawUsers.map(User.fromJSON);
   const found = users.find(u => u.id === userId);
   console.log("getUser - Searching for:", userId, "Found:", found);
-  return found ? User.fromJSON(found) : null;
+  return found || null;
 }
+
 
 /**
  * Returns true if a user is currently authenticated.

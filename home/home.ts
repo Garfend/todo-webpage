@@ -172,32 +172,25 @@ function renderTasks(cards, tabType) {
 
   const today = new Date();
   const format = (d) => d.toISOString().split("T")[0];
-
-  if (tabType === "all") {
-    filtered = filtered.filter(
-      (c) =>
-        (c.dueDate && new Date(c.dueDate) >= today) ||
-        new Date(c.dueDate) < today
-    );
-  } else if (tabType === "prev") {
-    filtered = filtered.filter((c) => c.dueDate && new Date(c.dueDate) < today);
-  } else if (tabType === "today") {
-    filtered = filtered.filter(
-      (c) => c.dueDate && format(new Date(c.dueDate)) === format(today)
-    );
+  if (tabType === "prev") {
+    filtered = filtered.filter((c) => {
+      const dueDate = new Date(c.dueDate);
+      return dueDate < today && dueDate.toDateString() !== today.toDateString();
+    });
+  }
+  else if (tabType === "today") {
+    filtered = filtered.filter((c) => format(new Date(c.dueDate)) === format(today));
   } else if (tabType === "tomorrow") {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    filtered = filtered.filter(
-      (c) => c.dueDate && format(new Date(c.dueDate)) === format(tomorrow)
-    );
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    filtered = filtered.filter((c) => format(new Date(c.dueDate)) === format(tomorrow));
   } else if (tabType === "upcoming") {
-    const afterTomorrow = new Date();
-    afterTomorrow.setDate(afterTomorrow.getDate() + 2);
-    filtered = filtered.filter(
-      (c) => c.dueDate && new Date(c.dueDate) >= afterTomorrow
-    );
-  } else if (tabType === "completed") {
+    filtered = filtered.filter((c) => new Date(c.dueDate) > today);
+  }
+  else if (tabType === "all") {
+    filtered = filtered.filter((c) => true);
+  }
+  else if (tabType === "completed") {
     filtered = filtered.filter((c) => c.complete === true);
   }
 
